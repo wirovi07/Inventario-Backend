@@ -11,17 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('users', function (Blueprint $table) {
-            $table->unsignedSmallInteger('id')->autoIncrement();
-            $table->enum('type_document', ['rc', 'ti', 'cc', 'ex'])->nullable();
-            $table->string('document')->nullable()->unique();
-            $table->string('first_name');
-            $table->string('last_name');
-            $table->enum('sex', ['masculino', 'femenino'])->nullable();
+        Schema::create('companies', function (Blueprint $table) {
+            $table->unsignedSmallInteger('id')->autoIncrement();         
+            $table->string('nit');
+            $table->string('name');
             $table->string('address');
             $table->string('phone');
             $table->string('email')->unique();
-            $table->string('password');
+            $table->unsignedSmallInteger('user_id')->unsigned(); 
+            $table->foreign('user_id')->references('id')->on('users');
             $table->timestamps();
         });
     }
@@ -31,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('companies');
     }
 };

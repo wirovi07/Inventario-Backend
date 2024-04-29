@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('users', function (Blueprint $table) {
+        Schema::create('customers', function (Blueprint $table) {
             $table->unsignedSmallInteger('id')->autoIncrement();
             $table->enum('type_document', ['rc', 'ti', 'cc', 'ex'])->nullable();
             $table->string('document')->nullable()->unique();
@@ -21,8 +21,10 @@ return new class extends Migration
             $table->string('address');
             $table->string('phone');
             $table->string('email')->unique();
-            $table->string('password');
+            $table->unsignedSmallInteger('company_id')->unsigned(); 
+            $table->foreign('company_id')->references('id')->on('companies');
             $table->timestamps();
+            
         });
     }
 
@@ -31,6 +33,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('customers');
     }
 };
