@@ -14,5 +14,7 @@ class Shopping extends Model
     protected $fillable = [
         'date',
         'total',
+        'company_id',
+        'supplier_id'
     ];
 }

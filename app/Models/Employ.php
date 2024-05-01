@@ -22,5 +22,6 @@ class Employ extends Model
         'address',
         'phone',
         'email',
+        'company_id'
     ];
 }

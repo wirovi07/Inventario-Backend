@@ -15,5 +15,7 @@ class Shoppingdetails extends Model
         'amount',
         'unit_price',
         'subtotal',
+        'buy_id',
+        'product_id'
     ];
 }

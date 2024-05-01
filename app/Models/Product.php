@@ -16,5 +16,7 @@ class Product extends Model
         'description',
         'price',
         'inventory_quantity',
+        'company_id',
+        'supplier_id'
     ];
 }

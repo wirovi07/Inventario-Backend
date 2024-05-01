@@ -13,7 +13,7 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends Controller
 {
-    
+
     public function register(Request $request)
     {
         $request->validate([
@@ -22,13 +22,9 @@ class AuthController extends Controller
             'first_name' => 'required|string',
             'last_name' => 'required|string',
             'sex' => 'required|string',
-            'phone' => 'required|numeric',
-            'birthdate' => 'required|date',
-            'email' => 'required|email|string',
             'address' => 'required|string',
-            'city' => 'required|string',
-            'state' => 'required|string',
-            'neighborhood' => 'required|string',
+            'phone' => 'required|numeric',
+            'email' => 'required|email|string',
             'password' => 'required',
         ]);
 
@@ -36,31 +32,16 @@ class AuthController extends Controller
 
         try {
             $user = new User();
-            $user->rol = "paciente";
+            $user->type_document = $request->type_document;
+            $user->document = $request->document;
+            $user->first_name = $request->first_name;
+            $user->last_name = $request->last_name;
+            $user->sex = $request->sex;
+            $user->address = $request->address;
+            $user->phone = $request->phone;
             $user->email = $request->email;
             $user->password = Hash::make($request->password);
             $user->save();
-
-            $person = new Person();
-            $person->type_document = $request->type_document;
-            $person->document = $request->document;
-            $person->first_name = $request->first_name;
-            $person->last_name = $request->last_name;
-            $person->sex = $request->sex;
-            $person->phone = $request->phone;
-            $person->birthdate = $request->birthdate;
-            $person->address = $request->address;
-            $person->city = $request->city;
-            $person->state = $request->state;
-            $person->neighborhood = $request->neighborhood;
-            $person->user_id = $user->id;
-            $person->save();
-
-            $patients = new Pacient();
-            $patients->affilliate_type = $request->affilliate_type;
-            $patients->eps_id = $request->eps_id;
-            $patients->person_id = $person->id;
-            $patients->save();
 
             DB::commit();
             return response()->json(['message' => 'Users created successfully']);
@@ -83,7 +64,6 @@ class AuthController extends Controller
         }
 
         return $this->respondWithToken($token);
-
     }
 
     public function logout(Request $request)
@@ -105,8 +85,8 @@ class AuthController extends Controller
     protected function respondWithToken($token)
     {
         return response()->json([
-                'access_token' => $token,
-                'user'=>auth('api')->user(),
+            'access_token' => $token,
+            'user' => auth('api')->user(),
         ]);
     }
 }

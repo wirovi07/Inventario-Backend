@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('last_name');
             $table->string('employee_position');
             $table->date('hire_date');
-            $table->date('salary');           
+            $table->double('salary');           
             $table->enum('sex', ['masculino', 'femenino'])->nullable();
             $table->string('address');
             $table->string('phone');

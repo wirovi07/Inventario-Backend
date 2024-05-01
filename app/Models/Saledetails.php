@@ -15,5 +15,7 @@ class Saledetails extends Model
         'amount',
         'unit_price',
         'subtotal',
+        'sale_id',
+        'product_id'
     ];
 }
