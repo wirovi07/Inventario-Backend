@@ -9,7 +9,7 @@ use App\Helpers\Codification;
 use Illuminate\Database\QueryException;
 
 
-class ProductController extends Controller
+class SaledetailsController extends Controller
 {
     public function index()
     {
