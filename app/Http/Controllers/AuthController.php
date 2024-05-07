@@ -18,17 +18,15 @@ class AuthController extends Controller
     {
         $request->validate([
             'type_document' => 'required|string',
-            'document' => 'required|unique',
+            'document' => 'required|numeric|unique:users,document',
             'first_name' => 'required|string',
             'last_name' => 'required|string',
             'sex' => 'required|string',
             'address' => 'required|string',
             'phone' => 'required|numeric',
-            'email' => 'required|email|string',
+            'email' => 'required|string',
             'password' => 'required',
         ]);
-
-        DB::beginTransaction();
 
         try {
             $user = new User();
@@ -42,11 +40,9 @@ class AuthController extends Controller
             $user->email = $request->email;
             $user->password = Hash::make($request->password);
             $user->save();
-
-            DB::commit();
             return response()->json(['message' => 'Users created successfully']);
+
         } catch (\Throwable $th) {
-            DB::rollBack();
             return response()->json(['message' => $th->getMessage()], 422);
         }
     }
