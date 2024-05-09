@@ -9,7 +9,9 @@ use Laravel\Sanctum\HasApiTokens;
 
 class Sales extends Model
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasFactory;
+
+    protected $table = 'sales';
 
     protected $fillable = [
         'date',

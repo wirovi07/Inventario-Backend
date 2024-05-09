@@ -9,7 +9,10 @@ use Laravel\Sanctum\HasApiTokens;
 
 class Company extends Model
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasFactory;
+
+    protected $table = 'companies';
+
 
     protected $fillable = [
         'nit',

@@ -9,7 +9,9 @@ use Laravel\Sanctum\HasApiTokens;
 
 class Employ extends Model
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasFactory;
+
+    protected $table = 'employees';
 
     protected $fillable = [
         'type_document',

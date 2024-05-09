@@ -9,7 +9,9 @@ use Laravel\Sanctum\HasApiTokens;
 
 class Shopping extends Model
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasFactory;
+
+    protected $table = 'shopping';
 
     protected $fillable = [
         'date',

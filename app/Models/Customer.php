@@ -9,7 +9,9 @@ use Laravel\Sanctum\HasApiTokens;
 
 class Customer extends Model
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasFactory;
+
+    protected $table = 'customers';
 
     protected $fillable = [
         'type_document',

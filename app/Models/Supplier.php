@@ -9,7 +9,9 @@ use Laravel\Sanctum\HasApiTokens;
 
 class Supplier extends Model
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasFactory;
+
+    protected $table = 'suppliers';
 
     protected $fillable = [
         'company_name',
