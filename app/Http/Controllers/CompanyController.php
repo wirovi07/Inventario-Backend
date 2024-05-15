@@ -27,8 +27,8 @@ class CompanyController extends Controller
         ->where("c.id", $id)
         ->select(
             "c.*",
-            "u.first_name as name"
-        )->get();
+            "u.first_name as first_name"
+        )->first();
 
         if ($company) {
             return response()->json(['message' => 'Company found', 'data' => $company]);
@@ -76,7 +76,6 @@ class CompanyController extends Controller
             'address' => 'required|string',
             'phone' => 'required|string',
             'email' => 'required|string',
-            'user_id' => 'required|int'
         ]);
 
         try {
@@ -86,7 +85,6 @@ class CompanyController extends Controller
             $company->address = $request->address;
             $company->phone = $request->phone;
             $company->email = $request->email;
-            $company->user_id = $request->user_id;
             $company->save();
 
             return response()->json(['message' => 'Company updated successfully']);
