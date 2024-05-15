@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Company;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use App\Helpers\Codification;
 use Illuminate\Database\QueryException;
 
@@ -37,8 +39,9 @@ class CompanyController extends Controller
             'address' => 'required|string',
             'phone' => 'required|string',
             'email' => 'required|string',
-            'user_id' => 'required|int'
         ]);
+        
+        DB::beginTransaction();
 
         try {
             $company = new Company();
@@ -47,11 +50,14 @@ class CompanyController extends Controller
             $company->address = $request->address;
             $company->phone = $request->phone;
             $company->email = $request->email;
-            $company->user_id = $request->user_id;
+            $company->user_id = Auth::id();
             $company->save();
+
+        DB::commit();
 
             return response()->json(['message' => 'Company created successfully']);
         } catch (QueryException $e) {
+        DB::rollBack();
             return response()->json(['message' => 'Error creating Company: ' . $e->getMessage()], 500);
         }
     }
