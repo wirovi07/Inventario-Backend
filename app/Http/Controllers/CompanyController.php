@@ -22,7 +22,13 @@ class CompanyController extends Controller
 
     public function show(string $id)
     {
-        $company = Company::find($id);
+        $company = DB::table("companies as c")
+        ->join("users as u", "c.user_id", "u.id")
+        ->where("c.id", $id)
+        ->select(
+            "c.*",
+            "u.first_name as name"
+        )->get();
 
         if ($company) {
             return response()->json(['message' => 'Company found', 'data' => $company]);
