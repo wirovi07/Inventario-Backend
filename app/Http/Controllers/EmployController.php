@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Employ;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 use App\Helpers\Codification;
 use Illuminate\Database\QueryException;
 
@@ -13,14 +14,46 @@ class EmployController extends Controller
 {
     public function index()
     {
-        $employList = Employ::all();
+        $employList = DB::table("employees as e")
+        ->select(
+            DB::raw("CONCAT(e.first_name,' ',e.last_name) as name"),
+            "e.type_document as type_document",
+            "e.document as document",
+            "e.employee_position as employee_position",
+            "e.hire_date as hire_date",
+            "e.salary as salary",
+            "e.sex as sex",
+            "e.address as address",
+            "e.phone as phone",
+            "e.email as email",
+        )->get();
 
-        return response()->json(['message' => 'List of employ', 'data' => $employList]);
+        if ($employList) {
+            return response()->json(['message' => 'List of employ found', 'data' => $employList]);
+        } else {
+            return response()->json(['message' => 'List of employ not found']);
+        }
     }
 
     public function show(string $id)
     {
-        $employ = Employ::find($id);
+        $employ = DB::table("employees as e")
+        ->join("companies as c", "e.company_id", "c.id")
+        ->where("e.id", $id)
+        ->select(
+            "e.type_document as type_document",
+            "e.document as document",
+            "e.first_name as first_name",
+            "e.last_name as last_name",
+            "e.employee_position as employee_position",
+            "e.hire_date as hire_date",
+            "e.salary as salary",
+            "e.sex as sex",
+            "e.address as address",
+            "e.phone as phone",
+            "e.email as email",
+            "c.name as name"
+        )->first();
 
         if ($employ) {
             return response()->json(['message' => 'Employ found', 'data' => $employ]);
