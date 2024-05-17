@@ -13,6 +13,17 @@ use Illuminate\Database\QueryException;
 
 class CompanyController extends Controller
 {
+    public function company()
+    {
+        $data = DB::table("companies as c")
+        ->select(
+    "c.id as id",
+            "c.name as name",
+        )->get();
+
+        return response()->json(['message' => 'List of Companies', 'data' => $data]);
+    }
+
     public function index()
     {
         $companyList = Company::all();
@@ -23,12 +34,12 @@ class CompanyController extends Controller
     public function show(string $id)
     {
         $company = DB::table("companies as c")
-        ->join("users as u", "c.user_id", "u.id")
-        ->where("c.id", $id)
-        ->select(
-            "c.*",
-            "u.first_name as first_name"
-        )->first();
+            ->join("users as u", "c.user_id", "u.id")
+            ->where("c.id", $id)
+            ->select(
+                "c.*",
+                "u.first_name as first_name"
+            )->first();
 
         if ($company) {
             return response()->json(['message' => 'Company found', 'data' => $company]);
@@ -46,7 +57,7 @@ class CompanyController extends Controller
             'phone' => 'required|string',
             'email' => 'required|string',
         ]);
-        
+
         DB::beginTransaction();
 
         try {
@@ -59,11 +70,11 @@ class CompanyController extends Controller
             $company->user_id = Auth::id();
             $company->save();
 
-        DB::commit();
+            DB::commit();
 
             return response()->json(['message' => 'Company created successfully']);
         } catch (QueryException $e) {
-        DB::rollBack();
+            DB::rollBack();
             return response()->json(['message' => 'Error creating Company: ' . $e->getMessage()], 500);
         }
     }

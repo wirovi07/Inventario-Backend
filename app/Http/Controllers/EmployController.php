@@ -16,6 +16,7 @@ class EmployController extends Controller
     {
         $employList = DB::table("employees as e")
         ->select(
+            "e.id as id",
             DB::raw("CONCAT(e.first_name,' ',e.last_name) as name"),
             "e.type_document as type_document",
             "e.document as document",
@@ -41,6 +42,7 @@ class EmployController extends Controller
         ->join("companies as c", "e.company_id", "c.id")
         ->where("e.id", $id)
         ->select(
+            "e.id as id",
             "e.type_document as type_document",
             "e.document as document",
             "e.first_name as first_name",
@@ -52,6 +54,7 @@ class EmployController extends Controller
             "e.address as address",
             "e.phone as phone",
             "e.email as email",
+            "c.id as company_id",
             "c.name as name"
         )->first();
 
@@ -73,11 +76,13 @@ class EmployController extends Controller
             'hire_date' => 'required|date',
             'salary' => 'required|numeric',
             'sex' => 'required|string',
-            'address' => 'required|int',
+            'address' => 'required|string',
             'phone' => 'required|string',
             'email' => 'required|string',
             'company_id' => 'required|int'
         ]);
+
+        DB::beginTransaction();
 
         try {
             $employ = new employ();
@@ -95,8 +100,10 @@ class EmployController extends Controller
             $employ->company_id = $request->company_id;
             $employ->save();
 
+            DB::commit();
             return response()->json(['message' => 'Employ created successfully']);
         } catch (QueryException $e) {
+            DB::rollBack();
             return response()->json(['message' => 'Error creating employ: ' . $e->getMessage()], 500);
         }
     }
@@ -112,7 +119,7 @@ class EmployController extends Controller
             'hire_date' => 'required|date',
             'salary' => 'required|numeric',
             'sex' => 'required|string',
-            'address' => 'required|int',
+            'address' => 'required|string',
             'phone' => 'required|string',
             'email' => 'required|string',
             'company_id' => 'required|int'
