@@ -10,6 +10,7 @@ use App\Http\Controllers\SaledetailsController;
 use App\Http\Controllers\ShoppingController;
 use App\Http\Controllers\ShoppingdetailsController;
 use App\Http\Controllers\SupplierController;
+use App\Models\Customer;
 use GuzzleHttp\Middleware;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -84,4 +85,5 @@ Route::group(['middleware' => 'auth:api'], function () {
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
 
-Route::get('companyEmploye', [CompanyController::class, 'company']);
+Route::get('companyAll', [CompanyController::class, 'company']);
+

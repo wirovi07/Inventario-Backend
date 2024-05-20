@@ -15,6 +15,7 @@ class EmployController extends Controller
     public function index()
     {
         $employList = DB::table("employees as e")
+        ->join("companies as c", "c.id", "e.company_id")
         ->select(
             "e.id as id",
             DB::raw("CONCAT(e.first_name,' ',e.last_name) as name"),
@@ -27,12 +28,13 @@ class EmployController extends Controller
             "e.address as address",
             "e.phone as phone",
             "e.email as email",
+            "c.name as name_company"
         )->get();
 
         if ($employList) {
-            return response()->json(['message' => 'List of employ found', 'data' => $employList]);
+            return response()->json(['message' => 'List of employees found', 'data' => $employList]);
         } else {
-            return response()->json(['message' => 'List of employ not found']);
+            return response()->json(['message' => 'List of employees not found']);
         }
     }
 

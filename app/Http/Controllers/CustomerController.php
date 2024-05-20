@@ -7,16 +7,33 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Helpers\Codification;
 use Illuminate\Database\QueryException;
-
+use Illuminate\Support\Facades\DB;
 
 class CustomerController extends Controller
 {
     public function index()
     {
-        $customerList = Customer::all();
+        $customerList = DB::table("customers as cus")
+        ->join("companies as c", "c.id", "cus.company_id")
+        ->select(
+            "cus.id as id",
+            DB::raw("CONCAT(cus.first_name,' ',cus.last_name) as name"),
+            "cus.type_document as type_document",
+            "cus.document as document",
+            "cus.sex as sex",
+            "cus.address as address",
+            "cus.phone as phone",
+            "cus.email as email",
+            "c.name as name_company"
+        )->get();
 
-        return response()->json(['message' => 'List of customer', 'data' => $customerList]);
+        if ($customerList) {
+            return response()->json(['message' => 'List of customers found', 'data' => $customerList]);
+        } else {
+            return response()->json(['message' => 'List of customers not found']);
+        }
     }
+
 
     public function show(string $id)
     {
@@ -37,7 +54,7 @@ class CustomerController extends Controller
             'first_name' => 'required|string',
             'last_name' => 'required|string',
             'sex' => 'required|string',
-            'address' => 'required|int',
+            'address' => 'required|string',
             'phone' => 'required|string',
             'email' => 'required|string',
             'company_id' => 'required|int'
