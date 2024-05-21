@@ -7,15 +7,31 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Helpers\Codification;
 use Illuminate\Database\QueryException;
-
+use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
 {
+
     public function index()
     {
-        $productList = Product::all();
+        $productList = DB::table("products as p")
+        ->join("companies as c", "c.id", "p.company_id")
+        ->join("suppliers as su", "su.id", "p.supplier_id")
+        ->select(
+            "p.id as id",
+            "p.name as name",
+            "p.description as description",
+            "p.price as price",
+            "p.inventory_quantity as inventory_quantity",
+            "c.name as name_company",
+            "su.company_name as name_supplier"
+        )->get();
 
-        return response()->json(['message' => 'List of product', 'data' => $productList]);
+        if ($productList) {
+            return response()->json(['message' => 'List of products found', 'data' => $productList]);
+        } else {
+            return response()->json(['message' => 'List of products not found']);
+        }
     }
 
     public function show(string $id)

@@ -11,6 +11,17 @@ use Illuminate\Support\Facades\DB;
 
 class SupplierController extends Controller
 {
+    public function supplier()
+    {
+        $data = DB::table("suppliers as su")
+        ->select(
+        "su.id as id",
+            "su.company_name as name",
+        )->get();
+
+        return response()->json(['message' => 'List of suppliers', 'data' => $data]);
+    }
+
     public function index()
     {
         $supplierList = DB::table("suppliers as su")

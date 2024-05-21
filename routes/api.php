@@ -86,4 +86,4 @@ Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
 
 Route::get('companyAll', [CompanyController::class, 'company']);
-
+Route::get('supplierAll', [SupplierController::class, 'supplier']);
