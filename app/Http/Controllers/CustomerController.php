@@ -87,7 +87,7 @@ class CustomerController extends Controller
             'first_name' => 'required|string',
             'last_name' => 'required|string',
             'sex' => 'required|string',
-            'address' => 'required|int',
+            'address' => 'required|string',
             'phone' => 'required|string',
             'email' => 'required|string',
             'company_id' => 'required|int'

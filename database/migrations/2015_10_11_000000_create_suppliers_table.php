@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('suppliers', function (Blueprint $table) {
             $table->unsignedSmallInteger('id')->autoIncrement();
             $table->string('company_name');
-            $table->string('contact _name');
             $table->string('address');
             $table->string('email')->unique();
             $table->string('phone');

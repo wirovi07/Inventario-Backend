@@ -34,8 +34,8 @@ class ProductController extends Controller
         $request->validate([
             'name' => 'required|string',
             'description' => 'required|string',
-            'price' => 'required|string',
-            'inventory_quantity' => 'required|string',
+            'price' => 'required|numeric',
+            'inventory_quantity' => 'required|numeric',
             'company_id' => 'required|int',
             'supplier_id' => 'required|int'
         ]);
@@ -61,8 +61,8 @@ class ProductController extends Controller
         $request->validate([
             'name' => 'required|string',
             'description' => 'required|string',
-            'price' => 'required|string',
-            'inventory_quantity' => 'required|string',
+            'price' => 'required|numeric',
+            'inventory_quantity' => 'required|numeric',
             'company_id' => 'required|int',
             'supplier_id' => 'required|int'
         ]);

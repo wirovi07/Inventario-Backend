@@ -7,15 +7,29 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Helpers\Codification;
 use Illuminate\Database\QueryException;
-
+use Illuminate\Support\Facades\DB;
 
 class SupplierController extends Controller
 {
     public function index()
     {
-        $supplierList = Supplier::all();
+        $supplierList = DB::table("suppliers as su")
+        ->join("companies as c", "c.id", "su.company_id")
+        ->select(
+            "su.id as id",
+            "su.company_name as company_name",
+            "su.contact_name as contact_name",
+            "su.address as address",
+            "su.email as email",
+            "su.phone as phone",
+            "c.name as name_company"
+        )->get();
 
-        return response()->json(['message' => 'List of supplier', 'data' => $supplierList]);
+        if ($supplierList) {
+            return response()->json(['message' => 'List of suppliers found', 'data' => $supplierList]);
+        } else {
+            return response()->json(['message' => 'List of suppliers not found']);
+        }
     }
 
     public function show(string $id)
@@ -32,7 +46,7 @@ class SupplierController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'company_name' => 'required|date',
+            'company_name' => 'required|string',
             'contact_name' => 'required|string',
             'address' => 'required|string',
             'email' => 'required|string',
@@ -59,7 +73,7 @@ class SupplierController extends Controller
     public function update(Request $request, string $id)
     {
         $request->validate([
-            'company_name' => 'required|date',
+            'company_name' => 'required|string',
             'contact_name' => 'required|string',
             'address' => 'required|string',
             'email' => 'required|string',
