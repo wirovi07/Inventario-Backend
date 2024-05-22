@@ -7,16 +7,32 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Helpers\Codification;
 use Illuminate\Database\QueryException;
-
-
+use Illuminate\Support\Facades\DB;
 class SaleController extends Controller
 {
     public function index()
     {
-        $salesList = Sales::all();
-
-        return response()->json(['message' => 'List of sales', 'data' => $salesList]);
+        $saleList = DB::table("sales as sa")
+            ->join("customers as cu", "cu.id",  "sa.customer_id")
+            ->join("companies as c", "c.id",  "sa.company_id")
+            ->join("employees as em", "em.id",  "sa.employee_id")
+            ->select(
+                "sa.id as id",
+                "sa.date as date",
+                "sa.total as total",
+                "c.name as company",
+                DB::raw("CONCAT(cu.first_name, ' ', cu.last_name) as customer"),
+                DB::raw("CONCAT(em.first_name, ' ', em.last_name) as employ")
+            )
+            ->get();
+    
+        if ($saleList) {
+            return response()->json(['message' => 'List of sales found', 'data' => $saleList]);
+        } else {
+            return response()->json(['message' => 'List of sales not found']);
+        }
     }
+    
 
     public function show(string $id)
     {
