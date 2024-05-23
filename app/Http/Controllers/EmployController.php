@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Employ;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
@@ -15,47 +16,49 @@ class EmployController extends Controller
     public function index()
     {
         $employList = DB::table("employees as e")
-        ->join("companies as c", "c.id", "e.company_id")
-        ->select(
-            "e.id as id",
-            DB::raw("CONCAT(e.first_name,' ',e.last_name) as name"),
-            "e.type_document as type_document",
-            "e.document as document",
-            "e.employee_position as employee_position",
-            "e.hire_date as hire_date",
-            "e.salary as salary",
-            "e.sex as sex",
-            "e.address as address",
-            "e.phone as phone",
-            "e.email as email",
-            "c.name as name_company"
-        )->get();
-
+            ->join("users as u", "u.id",  "e.user_id")
+            ->join("companies as c", "c.id",  "e.company_id")
+            ->select(
+                "e.id as id",
+                DB::raw("CONCAT(u.first_name, ' ', u.last_name) as name"),
+                "u.type_document as type_document",
+                "u.document as document",
+                "e.employee_position as employee_position", 
+                "e.hire_date as hire_date",                  
+                "e.salary as salary",                        
+                "u.sex as sex",
+                "u.address as address",
+                "u.phone as phone",
+                "u.email as email",
+                "c.name as name_company"
+            )->get();
+    
         if ($employList) {
             return response()->json(['message' => 'List of employees found', 'data' => $employList]);
         } else {
             return response()->json(['message' => 'List of employees not found']);
         }
     }
-
+    
     public function show(string $id)
     {
         $employ = DB::table("employees as e")
+        ->join("users as u", "u.id",  "e.user_id")
         ->join("companies as c", "e.company_id", "c.id")
         ->where("e.id", $id)
         ->select(
             "e.id as id",
-            "e.type_document as type_document",
-            "e.document as document",
-            "e.first_name as first_name",
-            "e.last_name as last_name",
+            "u.type_document as type_document",
+            "u.document as document",
+            "u.first_name as first_name",
+            "u.last_name as last_name",
             "e.employee_position as employee_position",
             "e.hire_date as hire_date",
             "e.salary as salary",
-            "e.sex as sex",
-            "e.address as address",
-            "e.phone as phone",
-            "e.email as email",
+            "u.sex as sex",
+            "u.address as address",
+            "u.phone as phone",
+            "u.email as email",
             "c.id as company_id",
             "c.name as name"
         )->first();
@@ -81,27 +84,34 @@ class EmployController extends Controller
             'address' => 'required|string',
             'phone' => 'required|string',
             'email' => 'required|string',
+            'password' => 'required',
             'company_id' => 'required|int'
         ]);
-
+    
         DB::beginTransaction();
-
+    
         try {
-            $employ = new employ();
-            $employ->type_document = $request->type_document;
-            $employ->document = $request->document;
-            $employ->first_name = $request->first_name;
-            $employ->last_name = $request->last_name;
+            $user = new User();
+            $user->type_document = $request->type_document;
+            $user->document = $request->document;
+            $user->first_name = $request->first_name;
+            $user->last_name = $request->last_name;
+            $user->rol = "empleado";
+            $user->sex = $request->sex;
+            $user->address = $request->address;
+            $user->phone = $request->phone;
+            $user->email = $request->email;
+            $user->password = Hash::make($request->password);
+            $user->save();
+    
+            $employ = new Employ();
             $employ->employee_position = $request->employee_position;
             $employ->hire_date = $request->hire_date;
             $employ->salary = $request->salary;
-            $employ->sex = $request->sex;
-            $employ->address = $request->address;
-            $employ->phone = $request->phone;
-            $employ->email = $request->email;
             $employ->company_id = $request->company_id;
+            $employ->user_id = $user->id; 
             $employ->save();
-
+    
             DB::commit();
             return response()->json(['message' => 'Employ created successfully']);
         } catch (QueryException $e) {
@@ -126,29 +136,37 @@ class EmployController extends Controller
             'email' => 'required|string',
             'company_id' => 'required|int'
         ]);
-
+    
+        DB::beginTransaction();
+    
         try {
-            $employ = Employ::find($id);
-            $employ->type_document = $request->type_document;
-            $employ->document = $request->document;
-            $employ->first_name = $request->first_name;
-            $employ->last_name = $request->last_name;
+            $employ = Employ::findOrFail($id);
+            $user = User::findOrFail($employ->user_id);
+    
             $employ->employee_position = $request->employee_position;
             $employ->hire_date = $request->hire_date;
             $employ->salary = $request->salary;
-            $employ->sex = $request->sex;
-            $employ->address = $request->address;
-            $employ->phone = $request->phone;
-            $employ->email = $request->email;
             $employ->company_id = $request->company_id;
             $employ->save();
-
+    
+            $user->type_document = $request->type_document;
+            $user->document = $request->document;
+            $user->first_name = $request->first_name;
+            $user->last_name = $request->last_name;
+            $user->sex = $request->sex;
+            $user->address = $request->address;
+            $user->phone = $request->phone;
+            $user->email = $request->email;
+            $user->save();
+    
+            DB::commit();
             return response()->json(['message' => 'Employ updated successfully']);
         } catch (QueryException $e) {
+            DB::rollBack();
             return response()->json(['message' => 'Error updating employ: ' . $e->getMessage()], 500);
         }
     }
-
+    
     public function destroy(string $id)
     {
         $employ = Employ::find($id);

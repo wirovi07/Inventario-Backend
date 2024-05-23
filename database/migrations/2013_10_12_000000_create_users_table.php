@@ -13,10 +13,11 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->unsignedSmallInteger('id')->autoIncrement();
-            $table->enum('type_document', ['rc', 'ti', 'cc', 'ex'])->nullable();
+            $table->enum('type_document', ['cc', 'ex'])->nullable();
             $table->string('document')->nullable()->unique();
             $table->string('first_name');
             $table->string('last_name');
+            $table->enum('rol', ['admin', 'empleado'])->nullable();
             $table->enum('sex', ['masculino', 'femenino'])->nullable();
             $table->string('address');
             $table->string('phone');

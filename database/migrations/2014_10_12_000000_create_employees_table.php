@@ -13,17 +13,11 @@ return new class extends Migration
     {
         Schema::create('employees', function (Blueprint $table) {
             $table->unsignedSmallInteger('id')->autoIncrement();
-            $table->enum('type_document', ['rc', 'ti', 'cc', 'ex'])->nullable();
-            $table->string('document')->nullable()->unique();
-            $table->string('first_name');
-            $table->string('last_name');
             $table->string('employee_position');
             $table->date('hire_date');
-            $table->double('salary');           
-            $table->enum('sex', ['masculino', 'femenino'])->nullable();
-            $table->string('address');
-            $table->string('phone');
-            $table->string('email')->unique();
+            $table->double('salary');  
+            $table->unsignedSmallInteger('user_id')->unsigned(); 
+            $table->foreign('user_id')->references('id')->on('users');         
             $table->unsignedSmallInteger('company_id')->unsigned(); 
             $table->foreign('company_id')->references('id')->on('companies');
             $table->timestamps();
@@ -31,9 +25,6 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('employees');

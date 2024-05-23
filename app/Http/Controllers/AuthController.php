@@ -34,6 +34,7 @@ class AuthController extends Controller
             $user->document = $request->document;
             $user->first_name = $request->first_name;
             $user->last_name = $request->last_name;
+            $user->rol = "admin";
             $user->sex = $request->sex;
             $user->address = $request->address;
             $user->phone = $request->phone;
