@@ -82,7 +82,8 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::put('supplier/{id}', [SupplierController::class, 'update']);
         Route::delete('supplier/{id}', [SupplierController::class, 'destroy']);
 
-        Route::get('userProfile', [AuthController::class, 'userProfile']);
+        Route::post('logout', [AuthController::class, 'logout']);
+        Route::put('userProfile', [AuthController::class, 'userProfile']);
 });
 
 Route::post('register', [AuthController::class, 'register']);
