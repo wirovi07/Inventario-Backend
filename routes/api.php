@@ -11,6 +11,7 @@ use App\Http\Controllers\ShoppingController;
 use App\Http\Controllers\ShoppingdetailsController;
 use App\Http\Controllers\SupplierController;
 use App\Models\Customer;
+use App\Models\Product;
 use GuzzleHttp\Middleware;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -87,3 +88,7 @@ Route::post('login', [AuthController::class, 'login']);
 
 Route::get('companyAll', [CompanyController::class, 'company']);
 Route::get('supplierAll', [SupplierController::class, 'supplier']);
+Route::get('customerAll', [CustomerController::class, 'customer']);
+Route::get('productAll', [ProductController::class, 'product']);
+
+

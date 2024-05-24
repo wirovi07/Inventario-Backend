@@ -16,13 +16,14 @@ class SaleController extends Controller
             ->join("customers as cu", "cu.id",  "sa.customer_id")
             ->join("companies as c", "c.id",  "sa.company_id")
             ->join("employees as em", "em.id",  "sa.employee_id")
+            ->join("users as us", "us.id", "em.user_id")
             ->select(
                 "sa.id as id",
                 "sa.date as date",
                 "sa.total as total",
                 "c.name as company",
                 DB::raw("CONCAT(cu.first_name, ' ', cu.last_name) as customer"),
-                DB::raw("CONCAT(em.first_name, ' ', em.last_name) as employ")
+                DB::raw("CONCAT(us.first_name, ' ', us.last_name) as employ")
             )
             ->get();
     

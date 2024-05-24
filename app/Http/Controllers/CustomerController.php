@@ -11,6 +11,17 @@ use Illuminate\Support\Facades\DB;
 
 class CustomerController extends Controller
 {
+    public function customer()
+    {
+        $data = DB::table("customers as cus")
+            ->select(
+                "cus.id as id",
+                DB::raw("CONCAT(cus.first_name,' ',cus.last_name) as name")
+            )->get();
+
+        return response()->json(['message' => 'List of customers', 'data' => $data]);
+    }
+
     public function index()
     {
         $customerList = DB::table("customers as cus")

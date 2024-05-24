@@ -16,10 +16,10 @@ class CompanyController extends Controller
     public function company()
     {
         $data = DB::table("companies as c")
-        ->select(
-    "c.id as id",
-            "c.name as name",
-        )->get();
+            ->select(
+                "c.id as id",
+                "c.name as name",
+            )->get();
 
         return response()->json(['message' => 'List of Companies', 'data' => $data]);
     }

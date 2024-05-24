@@ -8,9 +8,18 @@ use Illuminate\Support\Facades\Hash;
 use App\Helpers\Codification;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
-
 class ProductController extends Controller
 {
+    public function product()
+    {
+        $data = DB::table("products as p")
+            ->select(
+                "p.id as id",
+                "p.name as name",
+            )->get();
+
+        return response()->json(['message' => 'List of products', 'data' => $data]);
+    }
 
     public function index()
     {
