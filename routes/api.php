@@ -81,6 +81,8 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::post('supplier', [SupplierController::class, 'store']);
         Route::put('supplier/{id}', [SupplierController::class, 'update']);
         Route::delete('supplier/{id}', [SupplierController::class, 'destroy']);
+
+        Route::get('userProfile', [AuthController::class, 'userProfile']);
 });
 
 Route::post('register', [AuthController::class, 'register']);
@@ -90,5 +92,3 @@ Route::get('companyAll', [CompanyController::class, 'company']);
 Route::get('supplierAll', [SupplierController::class, 'supplier']);
 Route::get('customerAll', [CustomerController::class, 'customer']);
 Route::get('productAll', [ProductController::class, 'product']);
-
-
