@@ -15,7 +15,6 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends Controller
 {
-
     public function register(Request $request)
     {
         $request->validate([
@@ -56,10 +55,34 @@ class AuthController extends Controller
             'password' => ['required', 'string'],
         ]);
 
+        $user = User::where('email', $credentials['email'])->first();
 
-        if (!$token = auth('api')->attempt($credentials)) {
+        $params =  [
+            'type_document' => $user->type_document,
+            'document' => $user->document,
+            'first_name' => $user->first_name,
+            'last_name' => $user->last_name,
+            'sex' => $user->sex,
+            'address' => $user->address,
+            'phone' => $user->phone,
+            'email' => $user->email,
+            'rol' => $user->rol
+        ];
+
+        if($user->rol == "admin"){
+            $params["company"] = Company::where('user_id', $user->id)->first();
+            $params["employe"] = [];
+        }else{
+            $employe = Employ::where("user_id", $user->id)->first();
+            $params["company"] = Company::where("id", $employe->company_id)->first();
+            $params["employe"] = $employe;
+        }
+
+        if (!$token = JWTAuth::claims($params)->attempt($credentials)) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
+
+
 
         return $this->respondWithToken($token);
     }
@@ -125,4 +148,3 @@ class AuthController extends Controller
         ]);
     }
 }
-
