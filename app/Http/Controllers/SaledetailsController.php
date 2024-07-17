@@ -32,27 +32,31 @@ class SaledetailsController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'amount' => 'required|string',
-            'unit_price' => 'required|string',
-            'subtotal' => 'required|string',
             'sale_id' => 'required|int',
-            'product_id' => 'required|int'
+            'products' => 'required|array',
+            'products.*.product_id' => 'required|int',
+            'products.*.amount' => 'required|numeric',
+            'products.*.unit_price' => 'required|string',
+            'products.*.subtotal' => 'required|numeric'
         ]);
-
+    
         try {
-            $saledetails = new Saledetails();
-            $saledetails->amount = $request->amount;
-            $saledetails->unit_price = $request->unit_price;
-            $saledetails->subtotal = $request->subtotal;
-            $saledetails->sale_id = $request->sale_id;
-            $saledetails->product_id = $request->product_id;
-            $saledetails->save();
-
+            foreach ($request->products as $product) {
+                $saledetail = new Saledetails();
+                $saledetail->sale_id = $request->sale_id;
+                $saledetail->product_id = $product['product_id'];
+                $saledetail->amount = $product['amount'];
+                $saledetail->unit_price = $product['unit_price'];
+                $saledetail->subtotal = $product['subtotal'];
+                $saledetail->save();
+            }
+    
             return response()->json(['message' => 'Saledetails created successfully']);
         } catch (QueryException $e) {
             return response()->json(['message' => 'Error creating saledetails: ' . $e->getMessage()], 500);
         }
     }
+    
 
     public function update(Request $request, string $id)
     {
