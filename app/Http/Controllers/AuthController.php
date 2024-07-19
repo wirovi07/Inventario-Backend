@@ -79,13 +79,13 @@ class AuthController extends Controller
             $params["employe"] = $employe;
         }
 
-        // if (!$token = JWTAuth::claims($params)->attempt($credentials)) {
-        //     return response()->json(['error' => 'Unauthorized'], 401);
-        // }
-
-        if (!$token = auth('api')->attempt($credentials)) {
+        if (!$token = JWTAuth::claims($params)->attempt($credentials)) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
+
+        // if (!$token = auth('api')->attempt($credentials)) {
+        //     return response()->json(['error' => 'Unauthorized'], 401);
+        // }
 
         return $this->respondWithToken($token);
     }
@@ -151,10 +151,8 @@ class AuthController extends Controller
         ]);
     }
 
-    // Función para decodificar el token y obtener la información del usuario
     public function decodeToken(Request $request)
     {
-        // Obtener el token desde el encabezado de autorización
         $token = $request->bearerToken();
 
         if (!$token) {
@@ -162,10 +160,8 @@ class AuthController extends Controller
         }
 
         try {
-            // Decodificar el token
             $payload = JWTAuth::parseToken()->getPayload();
 
-            // Obtener los datos del usuario desde el payload
             $user = JWTAuth::parseToken()->authenticate();
 
             return response()->json([
