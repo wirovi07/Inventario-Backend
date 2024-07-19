@@ -93,3 +93,6 @@ Route::get('companyAll', [CompanyController::class, 'company']);
 Route::get('supplierAll', [SupplierController::class, 'supplier']);
 Route::get('customerAll', [CustomerController::class, 'customer']);
 Route::get('productAll', [ProductController::class, 'product']);
+
+
+Route::get('decode-token', [AuthController::class, 'decodeToken']);
