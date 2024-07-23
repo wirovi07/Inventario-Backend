@@ -70,22 +70,22 @@ class AuthController extends Controller
             'rol' => $user->rol
         ];
 
-        if($user->rol == "admin"){
+        if ($user->rol == "admin") {
             $params["company"] = Company::where('user_id', $user->id)->first();
             $params["employe"] = [];
-        }else{
+        } else {
             $employe = Employ::where("user_id", $user->id)->first();
             $params["company"] = Company::where("id", $employe->company_id)->first();
             $params["employe"] = $employe;
         }
 
-        if (!$token = JWTAuth::claims($params)->attempt($credentials)) {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
-
-        // if (!$token = auth('api')->attempt($credentials)) {
+        // if (!$token = JWTAuth::claims($params)->attempt($credentials)) {
         //     return response()->json(['error' => 'Unauthorized'], 401);
         // }
+
+        if (!$token = auth('api')->attempt($credentials)) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
 
         return $this->respondWithToken($token);
     }
@@ -160,14 +160,21 @@ class AuthController extends Controller
         }
 
         try {
-            $payload = JWTAuth::parseToken()->getPayload();
-
             $user = JWTAuth::parseToken()->authenticate();
 
-            return response()->json([
-                'token_payload' => $payload,
-                'user' => $user,
-            ]);
+            $employe = Employ::where("user_id", $user->id)->first();
+            if ($employe) {
+                $company = Company::where("id", $employe->company_id)->first();
+
+                return response()->json([
+                    'employee_id' => $employe->id,
+                    'employee_name' => $user->first_name . ' ' . $user->last_name,
+                    'company_id' => $company->id,
+                    'company_name' => $company->name,
+                ]);
+            } else {
+                return response()->json(['error' => 'Employee not found'], 404);
+            }
         } catch (JWTException $e) {
             return response()->json(['error' => 'Token invalid or expired'], 401);
         }
