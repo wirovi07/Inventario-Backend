@@ -79,13 +79,13 @@ class AuthController extends Controller
             $params["employe"] = $employe;
         }
 
-        // if (!$token = JWTAuth::claims($params)->attempt($credentials)) {
-        //     return response()->json(['error' => 'Unauthorized'], 401);
-        // }
-
-        if (!$token = auth('api')->attempt($credentials)) {
+        if (!$token = JWTAuth::claims($params)->attempt($credentials)) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
+
+        // if (!$token = auth('api')->attempt($credentials)) {
+        //     return response()->json(['error' => 'Unauthorized'], 401);
+        // }
 
         return $this->respondWithToken($token);
     }
