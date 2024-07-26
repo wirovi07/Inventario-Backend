@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Hash;
 use App\Helpers\Codification;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 class SaleController extends Controller
 {
     public function index()
@@ -49,36 +50,49 @@ class SaleController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'date' => 'required|date',
             'total' => 'required|string',
             'company_id' => 'required|int',
             'employee_id' => 'required|int',
-            'customer_id' => 'required|int'
+            'customer_id' => 'required|array',
+            'customer_id.id' => 'required|int'
         ]);
-
+    
+        $customer_id = $request->input('customer_id');
+    
+        if (!isset($customer_id['id'])) {
+            return response()->json(['error' => 'Invalid customer_id format'], 400);
+        }
+    
+        Log::info('Customer ID: ' . $customer_id['id']);
+    
         try {
             $sales = new Sales();
-            $sales->date = $request->date;
+            $sales->date = now(); 
             $sales->total = $request->total;
             $sales->company_id = $request->company_id;
             $sales->employee_id = $request->employee_id;
-            $sales->customer_id = $request->customer_id;
+            $sales->customer_id = $customer_id['id']; 
             $sales->save();
-
+    
             return response()->json(['message' => 'Sales created successfully']);
         } catch (QueryException $e) {
             return response()->json(['message' => 'Error creating sales: ' . $e->getMessage()], 500);
         }
     }
+    
+    
 
     public function update(Request $request, string $id)
     {
+
+        $customer_id = $request->customer_id['id'];
+
         $request->validate([
             'date' => 'required|date',
             'total' => 'required|string',
             'company_id' => 'required|int',
             'employee_id' => 'required|int',
-            'customer_id' => 'required|int'
+            'customer_id.id' => 'required|int'
         ]);
 
         try {

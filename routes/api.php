@@ -50,7 +50,7 @@ Route::group(['middleware' => 'auth:api'], function () {
         //SALE
         Route::get('sale', [SaleController::class, 'index']);
         Route::get('sale/{id}', [SaleController::class, 'show']);
-        Route::post('sale', [SaleController::class, 'store']);
+        Route::post('sale', [SaleController::class, 'store'])->middleware('decodeToken');
         Route::put('sale/{id}', [SaleController::class, 'update']);
         Route::delete('sale/{id}', [SaleController::class, 'destroy']);
 
@@ -96,3 +96,4 @@ Route::get('productAll', [ProductController::class, 'product']);
 
 
 Route::get('decode-token', [AuthController::class, 'decodeToken']);
+Route::post('sales', [SaleController::class, 'store'])->middleware('decodeToken');
