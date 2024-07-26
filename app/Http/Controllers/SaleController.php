@@ -50,7 +50,6 @@ class SaleController extends Controller
 
     public function store(Request $request)
     {
-      
         $request->validate([
             'total' => 'required',
             'customer_id' => 'required',
@@ -61,9 +60,7 @@ class SaleController extends Controller
             'products.*.subtotal' => 'required|numeric'
         ]);
     
-        $customer_id = $request->input('customer_id');
-    
-        try {
+    try {
             DB::beginTransaction();
             $sales = new Sales();
             $sales->date = now(); 
@@ -93,8 +90,6 @@ class SaleController extends Controller
             return response()->json(['message' => 'Error creating sales: ' . $e->getMessage()], 500);
         }
     }
-    
-    
 
     public function update(Request $request, string $id)
     {
