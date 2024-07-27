@@ -53,6 +53,7 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::post('sale', [SaleController::class, 'store'])->middleware('decodeToken');
         Route::put('sale/{id}', [SaleController::class, 'update']);
         Route::delete('sale/{id}', [SaleController::class, 'destroy']);
+        Route::get('salesShowForEdit/{id}', [SaleController::class, 'showSalesForEdit']);
 
         //SALE-DETAILS
         Route::get('saledetails', [SaledetailsController::class, 'index']);
