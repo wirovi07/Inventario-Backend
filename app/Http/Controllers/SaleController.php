@@ -135,7 +135,7 @@ class SaleController extends Controller
     {
         $data = DB::table('sales as s')
         ->join('sales_details as sd', 's.id', 'sd.sale_id')
-        ->where('sd.sale_id', $id)
+        ->where('s.id', $id)
         ->select(
             's.id as sale_id',
             's.date as date',
