@@ -134,7 +134,7 @@ class SaleController extends Controller
     public function showSalesForEdit(string $id)
     {
         $data = DB::table('sales as s')
-        ->join('sales_details as sd', 's.id', 'sd.sale_id')
+        ->join('customers as cu', 'cu.id', 's.customer_id')
         ->where('s.id', $id)
         ->select(
             's.id as sale_id',
@@ -143,15 +143,19 @@ class SaleController extends Controller
             's.company_id as company_id',
             's.employee_id as employee_id',
             's.customer_id as customer_id',
-            'sd.amount as amount',
-            'sd.unit_price as unit_price',
-            'sd.subtotal as subtotal',
-            'sd.sale_id as sale_id',
-            'sd.product_id as product_id'
+        )->first();
+        
+        $saledetail = DB::table("sales_details")->where("sale_id", $data->sale_id)->select(
+            'amount',
+            'unit_price',
+            'subtotal',
+            'sale_id',
+            'product_id',
         )->get();
+        
 
         if ($data) {
-            return response()->json(['message' => 'Sale found', 'data' => $data]);
+            return response()->json(['message' => 'Sale found', 'data' => ["sale" => $data, "detail" => $saledetail]]);
         } else {
             return response()->json(['message' => 'Sale not found']);
         }
