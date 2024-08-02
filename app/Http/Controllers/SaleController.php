@@ -90,30 +90,47 @@ class SaleController extends Controller
         }
     }
 
-    public function update(Request $request, string $id)
+    public function update(Request $request, $sale_id)
     {
-
-        $customer_id = $request->customer_id['id'];
-
         $request->validate([
-            'date' => 'required|date',
-            'total' => 'required|string',
-            'company_id' => 'required|int',
-            'employee_id' => 'required|int',
-            'customer_id.id' => 'required|int'
+            'total' => 'required',
+            'customer_id' => 'required',
+            'products' => 'required|array',
+            'products.*.product_id' => 'required|int',
+            'products.*.amount' => 'required|numeric',
+            'products.*.unit_price' => 'required|string',
+            'products.*.subtotal' => 'required|numeric'
         ]);
-
+    
         try {
-            $sales = Sales::find($id);
-            $sales->date = $request->date;
+            DB::beginTransaction();
+    
+            $sales = Sales::findOrFail($sale_id);
             $sales->total = $request->total;
-            $sales->company_id = $request->company_id;
-            $sales->employee_id = $request->employee_id;
+            $sales->company_id = $request->company_id ?? $sales->company_id; // En caso de que company_id no sea proporcionado
+            $sales->employee_id = $request->employee_id ?? $sales->employee_id; // En caso de que employee_id no sea proporcionado
             $sales->customer_id = $request->customer_id;
             $sales->save();
-
+    
+            // Borrar los registros existentes en saledetails
+            Saledetails::where('sale_id', $sale_id)->delete();
+    
+            // Insertar los nuevos registros en saledetails
+            foreach ($request->products as $product) {
+                $saledetail = new Saledetails();
+                $saledetail->sale_id = $sale_id;
+                $saledetail->product_id = $product['product_id'];
+                $saledetail->amount = $product['amount'];
+                $saledetail->unit_price = $product['unit_price'];
+                $saledetail->subtotal = $product['subtotal'];
+                $saledetail->save();
+            }
+    
+            DB::commit();
+    
             return response()->json(['message' => 'Sales updated successfully']);
         } catch (QueryException $e) {
+            DB::rollBack();
             return response()->json(['message' => 'Error updating sales: ' . $e->getMessage()], 500);
         }
     }
@@ -145,9 +162,9 @@ class SaleController extends Controller
             's.customer_id as customer_id',
         )->first();
         
-        $saledetail = DB::table("sales_details")->where("sale_id", $data->sale_id)->select(
+        $saledetail = DB::table("sales_details as sd")->where("sale_id", $data->sale_id)->select(
             'amount',
-            'unit_price',
+            'sd.unit_price as product_unit_price',
             'subtotal',
             'sale_id',
             'product_id',
