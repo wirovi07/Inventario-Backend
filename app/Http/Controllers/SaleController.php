@@ -61,6 +61,7 @@ class SaleController extends Controller
     
         try {
             DB::beginTransaction();
+
             $sales = new Sales();
             $sales->date = now(); 
             $sales->total = $request->total;
@@ -107,15 +108,13 @@ class SaleController extends Controller
     
             $sales = Sales::findOrFail($sale_id);
             $sales->total = $request->total;
-            $sales->company_id = $request->company_id ?? $sales->company_id; // En caso de que company_id no sea proporcionado
-            $sales->employee_id = $request->employee_id ?? $sales->employee_id; // En caso de que employee_id no sea proporcionado
+            $sales->company_id = $request->company_id ?? $sales->company_id; 
+            $sales->employee_id = $request->employee_id ?? $sales->employee_id; 
             $sales->customer_id = $request->customer_id;
             $sales->save();
     
-            // Borrar los registros existentes en saledetails
             Saledetails::where('sale_id', $sale_id)->delete();
     
-            // Insertar los nuevos registros en saledetails
             foreach ($request->products as $product) {
                 $saledetail = new Saledetails();
                 $saledetail->sale_id = $sale_id;
@@ -162,7 +161,9 @@ class SaleController extends Controller
             's.customer_id as customer_id',
         )->first();
         
-        $saledetail = DB::table("sales_details as sd")->where("sale_id", $data->sale_id)->select(
+        $saledetail = DB::table("sales_details as sd")
+        ->where("sale_id", $data->sale_id)
+        ->select(
             'amount',
             'sd.unit_price as product_unit_price',
             'subtotal',
