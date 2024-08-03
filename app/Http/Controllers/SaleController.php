@@ -113,16 +113,25 @@ class SaleController extends Controller
             $sales->customer_id = $request->customer_id;
             $sales->save();
     
-            Saledetails::where('sale_id', $sale_id)->delete();
-    
             foreach ($request->products as $product) {
-                $saledetail = new Saledetails();
-                $saledetail->sale_id = $sale_id;
-                $saledetail->product_id = $product['product_id'];
-                $saledetail->amount = $product['amount'];
-                $saledetail->unit_price = $product['unit_price'];
-                $saledetail->subtotal = $product['subtotal'];
-                $saledetail->save();
+                $saledetail = Saledetails::where('sale_id', $sale_id)
+                    ->where('product_id', $product['product_id'])
+                    ->first();
+    
+                if ($saledetail) {
+                    $saledetail->amount = $product['amount'];
+                    $saledetail->unit_price = $product['unit_price'];
+                    $saledetail->subtotal = $product['subtotal'];
+                    $saledetail->save();
+                } else {
+                    $saledetail = new Saledetails();
+                    $saledetail->sale_id = $sale_id;
+                    $saledetail->product_id = $product['product_id'];
+                    $saledetail->amount = $product['amount'];
+                    $saledetail->unit_price = $product['unit_price'];
+                    $saledetail->subtotal = $product['subtotal'];
+                    $saledetail->save();
+                }
             }
     
             DB::commit();
@@ -133,20 +142,31 @@ class SaleController extends Controller
             return response()->json(['message' => 'Error updating sales: ' . $e->getMessage()], 500);
         }
     }
-
+    
     public function destroy(string $id)
     {
-        $sales = Sales::find($id);
-
-        if (!$sales) {
-            return response()->json(['message' => 'Sales not delete']);
+        try {
+            DB::beginTransaction();
+    
+            $sales = Sales::find($id);
+    
+            if (!$sales) {
+                return response()->json(['message' => 'Sales not found'], 404);
+            }
+    
+            Saledetails::where('sale_id', $id)->delete();
+    
+            $sales->delete();
+    
+            DB::commit();
+            
+            return response()->json(['message' => 'Sales deleted successfully']);
+        } catch (QueryException $e) {
+            DB::rollBack();
+            return response()->json(['message' => 'Error deleting sales: ' . $e->getMessage()], 500);
         }
-
-        $sales->delete();
-
-        return response()->json(['message' => 'Sales deleted successfully']);
     }
-
+    
     public function showSalesForEdit(string $id)
     {
         $data = DB::table('sales as s')
