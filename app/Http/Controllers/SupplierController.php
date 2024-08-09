@@ -16,7 +16,7 @@ class SupplierController extends Controller
         $data = DB::table("suppliers as su")
         ->select(
         "su.id as id",
-            "su.company_name as name",
+            "su.contact_name as name",
         )->get();
 
         return response()->json(['message' => 'List of suppliers', 'data' => $data]);

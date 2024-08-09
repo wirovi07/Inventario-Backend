@@ -4,18 +4,32 @@ namespace App\Http\Controllers;
 
 use App\Models\Shopping;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use App\Helpers\Codification;
 use Illuminate\Database\QueryException;
-
 
 class ShoppingController extends Controller
 {
     public function index()
     {
-        $shoppingList = Shopping::all();
+        $buyList = DB::table("shopping as sh")
+            ->join("companies as c", "c.id",  "sh.company_id")
+            ->join("suppliers as su", "su.id",  "sh.supplier_id")
+            ->select(
+                "sh.id",
+                "sh.date",
+                "sh.total",
+                "c.name as company",
+                "su.contact_name as supplier",
+            )
+            ->get();
 
-        return response()->json(['message' => 'List of shopping', 'data' => $shoppingList]);
+        if ($buyList) {
+            return response()->json(['message' => 'List of buys found', 'data' => $buyList]);
+        } else {
+            return response()->json(['message' => 'List of buys not found']);
+        }
     }
 
     public function show(string $id)
